@@ -9,7 +9,7 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            text-align: center; /* Center-align all content */
+            text-align: center;
         }
         .container {
             max-width: 800px;
@@ -20,7 +20,7 @@
             border-collapse: collapse;
             margin-bottom: 20px;
             margin-left: auto;
-            margin-right: auto; /* Center-align table */
+            margin-right: auto;
         }
         table, th, td {
             border: 1px solid black;
@@ -41,7 +41,7 @@
         }
         .collapsible.main-category {
             font-weight: bold;
-            color: #6f4f28; /* Coffee color */
+            color: #6f4f28;
         }
         .content {
             display: none;
@@ -54,7 +54,7 @@
         }
         .collapsible.sub-category {
             font-weight: normal;
-            color: #333; /* Default text color */
+            color: #333;
         }
         .result-table {
             width: 100%;
@@ -71,7 +71,7 @@
         }
         .selected-items-title {
             font-weight: bold;
-            color: #6f4f28; /* Coffee color */
+            color: #6f4f28;
             margin-top: 20px;
         }
         button {
@@ -79,19 +79,35 @@
             font-size: 16px;
             border: none;
             border-radius: 5px;
-            background-color: #e0e0e0; /* Light gray background */
-            color: #333; /* Dark text color */
+            background-color: #e0e0e0;
+            color: #333;
             cursor: pointer;
             transition: background-color 0.3s ease, color 0.3s ease;
-            display: inline-block; /* Ensure button does not take full width */
+            display: inline-block;
             margin-top: 10px;
         }
         button:hover {
-            background-color: #b0b0b0; /* Darker gray on hover */
-            color: #000; /* Darker text color on hover */
+            background-color: #b0b0b0;
+            color: #000;
         }
         button:focus {
-            outline: none; /* Remove outline on focus */
+            outline: none;
+        }
+
+        /* Media Query for Small Screens */
+        @media only screen and (max-width: 600px) {
+            th, td {
+                padding: 5px;
+                font-size: 12px;
+            }
+            .collapsible {
+                font-size: 16px;
+                padding: 8px;
+            }
+            button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
         }
     </style>
 </head>
