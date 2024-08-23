@@ -9,29 +9,25 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            text-align: center; /* Center-align all content */
+            text-align: center;
         }
         .container {
             max-width: 100%;
             margin: auto;
-            padding: 0 10px; /* Add some padding for mobile view */
-        }
-        .table-wrapper {
-            overflow-x: auto; /* Horizontal scroll for table wrapper */
-            position: relative; /* Ensure positioning for sticky elements */
+            padding: 0 10px; /* Add padding for small screens */
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            table-layout: fixed; /* Fixed layout for better control */
+            margin: 0 auto 20px; /* Center-align table and margin at the bottom */
         }
         table, th, td {
             border: 1px solid black;
         }
         th, td {
-            padding: 10px;
+            padding: 8px; /* Adjust padding for better fit */
             text-align: left;
-            word-wrap: break-word; /* Allow text to wrap in table cells */
+            word-wrap: break-word; /* Ensure long words break correctly */
         }
         .collapsible {
             cursor: pointer;
@@ -40,12 +36,12 @@
             border: none;
             text-align: left;
             outline: none;
-            font-size: 18px;
+            font-size: 16px; /* Adjust font size for smaller screens */
             width: 100%;
         }
         .collapsible.main-category {
             font-weight: bold;
-            color: #6f4f28; /* Coffee color */
+            color: #6f4f28;
         }
         .content {
             display: none;
@@ -58,13 +54,12 @@
         }
         .collapsible.sub-category {
             font-weight: normal;
-            color: #333; /* Default text color */
+            color: #333;
         }
         .result-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
-            margin-bottom: 20px;
+            margin: 20px 0; /* Margin for top and bottom */
         }
         .result-table, .result-table th, .result-table td {
             border: 1px solid #ddd;
@@ -72,58 +67,43 @@
         .result-table th, .result-table td {
             padding: 10px;
             text-align: center;
+            word-wrap: break-word; /* Ensure long words break correctly */
         }
         .selected-items-title {
             font-weight: bold;
-            color: #6f4f28; /* Coffee color */
-            margin-top: 20px;
+            color: #6f4f28;
+            margin: 20px 0;
         }
         button {
             padding: 10px 20px;
             font-size: 16px;
             border: none;
             border-radius: 5px;
-            background-color: #e0e0e0; /* Light gray background */
-            color: #333; /* Dark text color */
+            background-color: #e0e0e0;
+            color: #333;
             cursor: pointer;
             transition: background-color 0.3s ease, color 0.3s ease;
-            display: inline-block; /* Ensure button does not take full width */
+            display: inline-block;
             margin-top: 10px;
         }
         button:hover {
-            background-color: #b0b0b0; /* Darker gray on hover */
-            color: #000; /* Darker text color on hover */
+            background-color: #b0b0b0;
+            color: #000;
         }
         button:focus {
-            outline: none; /* Remove outline on focus */
+            outline: none;
         }
-        /* Fixed product names on horizontal scroll */
-        .sticky-column th, .sticky-column td {
-            position: -webkit-sticky; /* For Safari */
-            position: sticky;
-            left: 0;
-            background-color: #f1f1f1; /* Same as table background */
-            z-index: 2; /* Ensure it stays above other content */
-            /* Border for sticky header */
-            border-right: 1px solid #ddd;
-        }
-        .sticky-column th {
-            z-index: 3; /* Ensure header stays above other sticky columns */
-            font-weight: bold;
-        }
+
+        /* Responsive Design */
         @media (max-width: 600px) {
-            table {
-                display: block;
-                overflow-x: auto; /* Add horizontal scrolling */
-                white-space: nowrap;
+            .collapsible {
+                font-size: 14px; /* Smaller font size for mobile */
+            }
+            table, .result-table {
+                font-size: 12px; /* Adjust font size for small screens */
             }
             th, td {
-                padding: 8px;
-                font-size: 14px;
-            }
-            button {
-                font-size: 14px;
-                padding: 8px 16px;
+                padding: 5px; /* Reduce padding */
             }
         }
     </style>
@@ -160,18 +140,16 @@
 
             <!-- Selected Items Section -->
             <div class="selected-items-title">所選品項</div>
-            <div class="table-wrapper">
-                <table class="result-table">
-                    <thead>
-                        <tr>
-                            <th>商品名稱</th>
-                            <th>數量</th>
-                            <th>總重量 (克)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="selectedItems"></tbody>
-                </table>
-            </div>
+            <table class="result-table">
+                <thead>
+                    <tr>
+                        <th>商品名稱</th>
+                        <th>數量</th>
+                        <th>總重量 (克)</th>
+                    </tr>
+                </thead>
+                <tbody id="selectedItems"></tbody>
+            </table>
         </div>
 
         <!-- CSV Content Section -->
@@ -246,7 +224,6 @@
                     const subDiv = document.createElement('div');
                     subDiv.className = 'content nested-content';
                     const table = document.createElement('table');
-                    table.className = 'sticky-column'; // Add class for sticky column
                     const headers = Object.keys(groupedData[category][subcategory][0] || {}).filter((_, index) => index > 1);
                     const thead = document.createElement('thead');
                     const headerRow = document.createElement('tr');
@@ -262,34 +239,108 @@
                     table.appendChild(thead);
 
                     const tbody = document.createElement('tbody');
-
-                    // Create table rows
-                    groupedData[category][subcategory].forEach(row => {
+                    groupedData[category][subcategory].forEach((row, rowIndex) => {
                         const tr = document.createElement('tr');
+                        let rowHasData = false; // Flag to check if row has data
+
                         headers.forEach(header => {
                             const td = document.createElement('td');
-                            td.textContent = row[header];
+                            const cellValue = row[header];
+                            if (cellValue) {
+                                rowHasData = true;
+                                td.textContent = cellValue;
+                            } else {
+                                td.textContent = ''; // Ensure empty cells do not show undefined
+                            }
                             tr.appendChild(td);
                         });
-                        const quantityTd = document.createElement('td');
-                        quantityTd.textContent = ''; // Placeholder for quantity input
-                        tr.appendChild(quantityTd);
-                        tbody.appendChild(tr);
+
+                        // Add Quantity input field
+                        const td = document.createElement('td');
+                        const input = document.createElement('input');
+                        input.type = 'number';
+                        input.className = 'quantity-input';
+                        input.id = `quantity-${rowIndex}`;
+                        input.addEventListener('input', updateTotals);
+                        td.appendChild(input);
+                        tr.appendChild(td);
+
+                        if (rowHasData) {
+                            tbody.appendChild(tr);
+                        }
                     });
                     table.appendChild(tbody);
                     subDiv.appendChild(table);
                     div.appendChild(subDiv);
                 });
+
                 csvContent.appendChild(div);
             });
         }
 
         function calculateTotal() {
-            // Placeholder for total calculation logic
-            console.log('Calculate total');
+            const totalCalories = document.getElementById('totalCalories');
+            const totalProtein = document.getElementById('totalProtein');
+            const totalFat = document.getElementById('totalFat');
+            const totalCarbs = document.getElementById('totalCarbs');
+            const totalFiber = document.getElementById('totalfiber');
+            const totalNetCarb = document.getElementById('totalnetcarb');
+            const selectedItems = document.getElementById('selectedItems');
+
+            let calories = 0;
+            let protein = 0;
+            let fat = 0;
+            let carbs = 0;
+            let fiber = 0;
+            let netCarbs = 0;
+
+            const rows = document.querySelectorAll('table tbody tr');
+            rows.forEach(row => {
+                const quantity = row.querySelector('input.quantity-input');
+                const selectedQuantity = quantity ? parseFloat(quantity.value) : 0;
+                const cells = row.querySelectorAll('td');
+
+                if (selectedQuantity > 0) {
+                    calories += parseFloat(cells[2].textContent || 0) * selectedQuantity;
+                    protein += parseFloat(cells[3].textContent || 0) * selectedQuantity;
+                    fat += parseFloat(cells[4].textContent || 0) * selectedQuantity;
+                    carbs += parseFloat(cells[5].textContent || 0) * selectedQuantity;
+                    fiber += parseFloat(cells[6].textContent || 0) * selectedQuantity;
+                    netCarbs += (parseFloat(cells[5].textContent || 0) - parseFloat(cells[6].textContent || 0)) * selectedQuantity;
+                    
+                    // Update selected items table
+                    let itemName = cells[0].textContent;
+                    let itemRow = document.getElementById(itemName);
+                    if (!itemRow) {
+                        itemRow = document.createElement('tr');
+                        itemRow.id = itemName;
+                        itemRow.innerHTML = `
+                            <td>${itemName}</td>
+                            <td>${selectedQuantity}</td>
+                            <td>${parseFloat(cells[7].textContent || 0) * selectedQuantity} 克</td>
+                        `;
+                        selectedItems.appendChild(itemRow);
+                    } else {
+                        itemRow.children[1].textContent = selectedQuantity;
+                        itemRow.children[2].textContent = parseFloat(cells[7].textContent || 0) * selectedQuantity + ' 克';
+                    }
+                }
+            });
+
+            // Display totals
+            totalCalories.textContent = `${Math.round(calories)} 大卡`;
+            totalProtein.textContent = `${Math.round(protein)} 克`;
+            totalFat.textContent = `${Math.round(fat)} 克`;
+            totalCarbs.textContent = `${Math.round(carbs)} 克`;
+            totalFiber.textContent = `${Math.round(fiber)} 克`;
+            totalNetCarb.textContent = `${Math.round(netCarbs)} 克`;
+        }
+
+        function updateTotals() {
+            // Call calculateTotal() whenever input changes
+            calculateTotal();
         }
     </script>
 </body>
 </html>
-
 
