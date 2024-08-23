@@ -111,13 +111,6 @@
             z-index: 3; /* Ensure header stays above other sticky columns */
             font-weight: bold;
         }
-        /* Quantity input styling */
-        .quantity-input {
-            width: 50px; /* Adjust width as needed */
-            font-size: 12px; /* Smaller font size */
-            padding: 2px; /* Reduce padding */
-            text-align: center; /* Center-align text */
-        }
         @media (max-width: 600px) {
             table {
                 display: block;
@@ -239,5 +232,64 @@
                 div.className = 'content';
                 
                 // Create nested collapsible sections for each subcategory
+                Object.keys(groupedData[category]).forEach(subcategory => {
+                    const subButton = document.createElement('button');
+                    subButton.className = 'collapsible nested-content sub-category';
+                    subButton.textContent = subcategory;
+                    subButton.addEventListener('click', function() {
+                        this.classList.toggle('active');
+                        const content = this.nextElementSibling;
+                        content.style.display = content.style.display === 'block' ? 'none' : 'block';
+                    });
+                    div.appendChild(subButton);
+
+                    const subDiv = document.createElement('div');
+                    subDiv.className = 'content nested-content';
+                    const table = document.createElement('table');
+                    table.className = 'sticky-column'; // Add class for sticky column
+                    const headers = Object.keys(groupedData[category][subcategory][0] || {}).filter((_, index) => index > 1);
+                    const thead = document.createElement('thead');
+                    const headerRow = document.createElement('tr');
+
+                    // Create table headers
+                    headers.forEach(header => {
+                        const th = document.createElement('th');
+                        th.textContent = header;
+                        headerRow.appendChild(th);
+                    });
+                    headerRow.appendChild(document.createElement('th')).textContent = '數量'; // Add Quantity header
+                    thead.appendChild(headerRow);
+                    table.appendChild(thead);
+
+                    const tbody = document.createElement('tbody');
+
+                    // Create table rows
+                    groupedData[category][subcategory].forEach(row => {
+                        const tr = document.createElement('tr');
+                        headers.forEach(header => {
+                            const td = document.createElement('td');
+                            td.textContent = row[header];
+                            tr.appendChild(td);
+                        });
+                        const quantityTd = document.createElement('td');
+                        quantityTd.textContent = ''; // Placeholder for quantity input
+                        tr.appendChild(quantityTd);
+                        tbody.appendChild(tr);
+                    });
+                    table.appendChild(tbody);
+                    subDiv.appendChild(table);
+                    div.appendChild(subDiv);
+                });
+                csvContent.appendChild(div);
+            });
+        }
+
+        function calculateTotal() {
+            // Placeholder for total calculation logic
+            console.log('Calculate total');
+        }
+    </script>
+</body>
+</html>
 
 
