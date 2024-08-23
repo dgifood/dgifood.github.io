@@ -2,64 +2,106 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>熱量計算表</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            text-align: center;
+            text-align: center; /* Center-align all content */
         }
         .container {
             max-width: 800px;
             margin: auto;
-            padding: 10px; /* 新增 padding */
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
             margin-left: auto;
-            margin-right: auto;
-            overflow-x: auto;
-            display: block;
+            margin-right: auto; /* Center-align table */
+        }
+        table, th, td {
+            border: 1px solid black;
         }
         th, td {
             padding: 10px;
             text-align: left;
-            font-size: 14px; /* 默認字體大小 */
+        }
+        .collapsible {
+            cursor: pointer;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 18px;
+            width: 100%;
+        }
+        .collapsible.main-category {
+            font-weight: bold;
+            color: #6f4f28; /* Coffee color */
+        }
+        .content {
+            display: none;
+            padding: 10px 0;
+            overflow: hidden;
+            background-color: #f1f1f1;
+        }
+        .nested-content {
+            padding-left: 20px;
+        }
+        .collapsible.sub-category {
+            font-weight: normal;
+            color: #333; /* Default text color */
+        }
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .result-table, .result-table th, .result-table td {
+            border: 1px solid #ddd;
+        }
+        .result-table th, .result-table td {
+            padding: 10px;
+            text-align: center;
+        }
+        .selected-items-title {
+            font-weight: bold;
+            color: #6f4f28; /* Coffee color */
+            margin-top: 20px;
         }
         button {
             padding: 10px 20px;
             font-size: 16px;
             border: none;
             border-radius: 5px;
-            background-color: #e0e0e0;
-            color: #333;
+            background-color: #e0e0e0; /* Light gray background */
+            color: #333; /* Dark text color */
             cursor: pointer;
             transition: background-color 0.3s ease, color 0.3s ease;
+            display: inline-block; /* Ensure button does not take full width */
             margin-top: 10px;
         }
-
-        /* 響應式設計的媒體查詢 */
-        @media (max-width: 600px) {
-            body {
-                margin: 10px;
-            }
-            table {
-                font-size: 12px; /* 縮小表格字體 */
-            }
-            th, td {
-                padding: 5px;
-            }
-            button {
-                padding: 8px 15px; /* 調整按鈕大小 */
-                font-size: 14px;
-            }
+        button:hover {
+            background-color: #b0b0b0; /* Darker gray on hover */
+            color: #000; /* Darker text color on hover */
+        }
+        button:focus {
+            outline: none; /* Remove outline on focus */
         }
     </style>
 </head>
 <body>
+    headers.forEach(header => {
+    const td = document.createElement('td');
+    td.setAttribute('data-label', header); // 添加這行
+    const cellValue = row[header];
+    td.textContent = cellValue || '';
+    tr.appendChild(td);
+});
     <div class="container">
         <h1>熱量計算表</h1>
 
