@@ -26,8 +26,9 @@
             border: 1px solid black;
         }
         th, td {
-            padding: 10px;
+            padding: 5px;
             text-align: left;
+            font-size: 10px; /* Smaller font size for the table */
         }
         .collapsible {
             cursor: pointer;
@@ -66,7 +67,8 @@
             border: 1px solid #ddd;
         }
         .result-table th, .result-table td {
-            padding: 10px;
+            padding: 5px; /* Reduced padding for the result table */
+            font-size: 10px; /* Smaller font size for the result table */
             text-align: center;
         }
         .selected-items-title {
@@ -97,11 +99,11 @@
         /* Media Query for Small Screens */
         @media only screen and (max-width: 600px) {
             th, td {
-                padding: 5px;
-                font-size: 12px;
+                padding: 3px; /* Further reduced padding */
+                font-size: 8px; /* Further reduced font size */
             }
             .collapsible {
-                font-size: 16px;
+                font-size: 14px;
                 padding: 8px;
             }
             button {
@@ -270,8 +272,6 @@
                         td.appendChild(input);
                         tr.appendChild(td);
 
-                        tbody.appendChild(tr);
-
                         if (rowHasData) {
                             tbody.appendChild(tr);
                         }
@@ -324,4 +324,5 @@
     </script>
 </body>
 </html>
+
 
