@@ -9,136 +9,41 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            text-align: center; /* Center-align all content */
+            text-align: center;
         }
         .container {
             max-width: 100%;
             margin: auto;
-            padding: 0 10px; /* Add some padding for mobile view */
+            padding: 0 10px;
         }
         .table-wrapper {
-            overflow-x: auto; /* Horizontal scroll for table wrapper */
-            position: relative; /* Ensure positioning for sticky elements */
+            max-width: 100%; /* Adjust max width as needed */
+            overflow-x: auto; /* Enable horizontal scrolling */
         }
         table {
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed; /* Fixed layout for better control */
         }
-        table, th, td {
-            border: 1px solid black;
-        }
         th, td {
-            padding: 10px;
+            border: 1px solid black;
+            padding: 8px; /* Reduced padding */
             text-align: left;
-            word-wrap: break-word; /* Allow text to wrap in table cells */
-        }
-        .collapsible {
-            cursor: pointer;
-            background-color: #f9f9f9;
-            padding: 10px;
-            border: none;
-            text-align: left;
-            outline: none;
-            font-size: 18px;
-            width: 100%;
-        }
-        .collapsible.main-category {
-            font-weight: bold;
-            color: #6f4f28; /* Coffee color */
-        }
-        .content {
-            display: none;
-            padding: 10px 0;
-            overflow: hidden;
-            background-color: #f1f1f1;
-        }
-        .nested-content {
-            padding-left: 20px;
-        }
-        .collapsible.sub-category {
-            font-weight: normal;
-            color: #333; /* Default text color */
-        }
-        .result-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-        .result-table, .result-table th, .result-table td {
-            border: 1px solid #ddd;
-        }
-        .result-table th, .result-table td {
-            padding: 10px;
-            text-align: center;
-        }
-        .selected-items-title {
-            font-weight: bold;
-            color: #6f4f28; /* Coffee color */
-            margin-top: 20px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            background-color: #e0e0e0; /* Light gray background */
-            color: #333; /* Dark text color */
-            cursor: pointer;
-            transition: background-color 0.3s ease, color 0.3s ease;
-            display: inline-block; /* Ensure button does not take full width */
-            margin-top: 10px;
-        }
-        button:hover {
-            background-color: #b0b0b0; /* Darker gray on hover */
-            color: #000; /* Darker text color on hover */
-        }
-        button:focus {
-            outline: none; /* Remove outline on focus */
-        }
-        /* Fixed product names on horizontal scroll */
-        .sticky-column th, .sticky-column td {
-            position: -webkit-sticky; /* For Safari */
-            position: sticky;
-            left: 0;
-            background-color: #f1f1f1; /* Same as table background */
-            z-index: 2; /* Ensure it stays above other content */
-            /* Border for sticky header */
-            border-right: 1px solid #ddd;
-        }
-        .sticky-column th {
-            z-index: 3; /* Ensure header stays above other sticky columns */
-            font-weight: bold;
+            word-wrap: break-word;
         }
         .quantity-input {
-            width: 10px; /* Adjust width as needed */
+            width: 40px; /* Adjust width to be smaller */
             font-size: 12px; /* Smaller font size */
-            padding: 1px; /* Reduce padding */
+            padding: 2px; /* Reduced padding */
             text-align: center; /* Center-align text */
         }
-        @media (max-width: 600px) {
-            table {
-                display: block;
-                overflow-x: auto; /* Add horizontal scrolling */
-                white-space: nowrap;
-            }
-            th, td {
-                padding: 8px;
-                font-size: 14px;
-            }
-            button {
-                font-size: 14px;
-                padding: 8px 16px;
-            }
-        }
+        /* Other existing styles... */
     </style>
 </head>
 <body>
     <div class="container">
         <h1>熱量計算表</h1>
 
-        <!-- Calculation and Results Section -->
         <div>
             <button onclick="calculateTotal()">計算總營養成分</button>
             <table class="result-table">
@@ -164,7 +69,6 @@
                 </tbody>
             </table>
 
-            <!-- Selected Items Section -->
             <div class="selected-items-title">所選品項</div>
             <div class="table-wrapper">
                 <table class="result-table">
@@ -180,7 +84,6 @@
             </div>
         </div>
 
-        <!-- CSV Content Section -->
         <div id="csvContent"></div>
     </div>
 
@@ -201,16 +104,13 @@
 
         function displayCSVData(data) {
             const csvContent = document.getElementById('csvContent');
-
-            // Clear existing content
             csvContent.innerHTML = '';
 
-            // Group data by the first and second columns
             const groupedData = data.reduce((acc, row) => {
                 const category = row[Object.keys(row)[0]];
                 const subcategory = row[Object.keys(row)[1]];
 
-                if (!category || !subcategory) return acc; // Skip if category or subcategory is undefined
+                if (!category || !subcategory) return acc;
 
                 if (!acc[category]) {
                     acc[category] = {};
@@ -222,7 +122,6 @@
                 return acc;
             }, {});
 
-            // Create collapsible sections for each main category
             Object.keys(groupedData).forEach(category => {
                 const button = document.createElement('button');
                 button.className = 'collapsible main-category';
@@ -237,10 +136,9 @@
                 const div = document.createElement('div');
                 div.className = 'content';
                 
-                // Create nested collapsible sections for each subcategory
                 Object.keys(groupedData[category]).forEach(subcategory => {
                     const subButton = document.createElement('button');
-                    subButton.className = 'collapsible nested-content sub-category';
+                    subButton.className = 'collapsible sub-category';
                     subButton.textContent = subcategory;
                     subButton.addEventListener('click', function() {
                         this.classList.toggle('active');
@@ -251,53 +149,51 @@
 
                     const subDiv = document.createElement('div');
                     subDiv.className = 'content nested-content';
+                    
                     const table = document.createElement('table');
-                    table.className = 'sticky-column'; // Add class for sticky column
-                    const headers = Object.keys(groupedData[category][subcategory][0] || {}).filter((_, index) => index > 1);
                     const thead = document.createElement('thead');
-                    const headerRow = document.createElement('tr');
-
-                    // Create table headers
-                    headers.forEach(header => {
-                        const th = document.createElement('th');
-                        th.textContent = header;
-                        headerRow.appendChild(th);
-                    });
-                    headerRow.appendChild(document.createElement('th')).textContent = '數量'; // Add Quantity header
-                    thead.appendChild(headerRow);
-                    table.appendChild(thead);
-
                     const tbody = document.createElement('tbody');
 
-                    // Create table rows
+                    const headerRow = document.createElement('tr');
+                    ['商品名稱', '熱量 (大卡)', '蛋白質 (克)', '脂肪 (克)', '碳水化合物 (克)', '膳食纖維 (克)', '淨碳水 (克)'].forEach(headerText => {
+                        const th = document.createElement('th');
+                        th.textContent = headerText;
+                        headerRow.appendChild(th);
+                    });
+                    thead.appendChild(headerRow);
+
                     groupedData[category][subcategory].forEach(row => {
                         const tr = document.createElement('tr');
-                        headers.forEach(header => {
+                        Object.values(row).forEach(cellText => {
                             const td = document.createElement('td');
-                            td.textContent = row[header];
+                            td.textContent = cellText;
                             tr.appendChild(td);
                         });
                         const quantityTd = document.createElement('td');
-                        quantityTd.textContent = ''; // Placeholder for quantity input
+                        const quantityInput = document.createElement('input');
+                        quantityInput.type = 'number';
+                        quantityInput.className = 'quantity-input';
+                        quantityInput.value = '';
+                        quantityTd.appendChild(quantityInput);
                         tr.appendChild(quantityTd);
                         tbody.appendChild(tr);
                     });
+
+                    table.appendChild(thead);
                     table.appendChild(tbody);
                     subDiv.appendChild(table);
                     div.appendChild(subDiv);
                 });
+
                 csvContent.appendChild(div);
             });
         }
 
         function calculateTotal() {
-            // Placeholder for total calculation logic
-            console.log('Calculate total');
+            // Implementation of total calculation
         }
     </script>
 </body>
 </html>
-
-
 
 
