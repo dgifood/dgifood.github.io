@@ -20,6 +20,7 @@
             width: 100%;
             border-collapse: collapse;
             margin: 0 auto 20px; /* Center-align table and margin at the bottom */
+            overflow-x: auto; /* Allow horizontal scrolling if needed */
         }
         table, th, td {
             border: 1px solid black;
@@ -28,6 +29,7 @@
             padding: 8px; /* Adjust padding for better fit */
             text-align: left;
             word-wrap: break-word; /* Ensure long words break correctly */
+            min-width: 60px; /* Minimum width for better readability */
         }
         .collapsible {
             cursor: pointer;
@@ -101,9 +103,15 @@
             }
             table, .result-table {
                 font-size: 12px; /* Adjust font size for small screens */
+                min-width: 300px; /* Minimum width for better visibility */
             }
             th, td {
                 padding: 5px; /* Reduce padding */
+            }
+            .quantity-input {
+                width: 100%; /* Full width for quantity input */
+                box-sizing: border-box; /* Ensure padding and border are included in the element's total width */
+                font-size: 12px; /* Smaller font size */
             }
         }
     </style>
@@ -249,18 +257,17 @@
                             if (cellValue) {
                                 rowHasData = true;
                                 td.textContent = cellValue;
-                            } else {
-                                td.textContent = ''; // Ensure empty cells do not show undefined
                             }
                             tr.appendChild(td);
                         });
 
-                        // Add Quantity input field
+                        // Create Quantity input field
                         const td = document.createElement('td');
                         const input = document.createElement('input');
                         input.type = 'number';
                         input.className = 'quantity-input';
-                        input.id = `quantity-${rowIndex}`;
+                        input.min = '0';
+                        input.value = '0';
                         input.addEventListener('input', updateTotals);
                         td.appendChild(input);
                         tr.appendChild(td);
@@ -343,6 +350,7 @@
     </script>
 </body>
 </html>
+
 
 
 
