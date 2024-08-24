@@ -14,20 +14,35 @@
         .container {
             max-width: 100%;
             margin: auto;
-            padding: 0 10px; /* Add padding for small screens */
+            padding: 0 10px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 0 auto 20px; /* Center-align table and margin at the bottom */
+            margin: 0 auto 20px;
+            table-layout: fixed; /* Prevent content from stretching */
         }
         table, th, td {
             border: 1px solid black;
         }
         th, td {
-            padding: 8px; /* Adjust padding for better fit */
+            padding: 8px;
             text-align: left;
-            word-wrap: break-word; /* Ensure long words break correctly */
+            word-wrap: break-word;
+        }
+        th {
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        .table-container {
+            overflow-x: auto; /* Enable horizontal scroll */
+            white-space: nowrap; /* Prevent wrapping */
+        }
+        .fixed-column {
+            position: sticky;
+            left: 0;
+            background-color: #fff; /* Ensure fixed column doesn't blend with other content */
+            z-index: 1;
         }
         .collapsible {
             cursor: pointer;
@@ -36,7 +51,7 @@
             border: none;
             text-align: left;
             outline: none;
-            font-size: 16px; /* Adjust font size for smaller screens */
+            font-size: 16px;
             width: 100%;
         }
         .collapsible.main-category {
@@ -59,7 +74,7 @@
         .result-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0; /* Margin for top and bottom */
+            margin: 20px 0;
         }
         .result-table, .result-table th, .result-table td {
             border: 1px solid #ddd;
@@ -67,7 +82,7 @@
         .result-table th, .result-table td {
             padding: 10px;
             text-align: center;
-            word-wrap: break-word; /* Ensure long words break correctly */
+            word-wrap: break-word;
         }
         .selected-items-title {
             font-weight: bold;
@@ -93,17 +108,16 @@
         button:focus {
             outline: none;
         }
-
         /* Responsive Design */
         @media (max-width: 600px) {
             .collapsible {
-                font-size: 14px; /* Smaller font size for mobile */
+                font-size: 14px;
             }
             table, .result-table {
-                font-size: 12px; /* Adjust font size for small screens */
+                font-size: 12px;
             }
             th, td {
-                padding: 5px; /* Reduce padding */
+                padding: 5px;
             }
         }
     </style>
@@ -111,51 +125,48 @@
 <body>
     <div class="container">
         <h1>熱量計算表</h1>
-
-        <!-- Calculation and Results Section -->
         <div>
             <button onclick="calculateTotal()">計算總營養成分</button>
-            <table class="result-table">
-                <thead>
-                    <tr>
-                        <th>總熱量</th>
-                        <th>總蛋白質</th>
-                        <th>總脂肪</th>
-                        <th>總碳水化合物</th>
-                        <th>膳食纖維</th>
-                        <th>淨碳水</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td id="totalCalories">0 大卡</td>
-                        <td id="totalProtein">0 克</td>
-                        <td id="totalFat">0 克</td>
-                        <td id="totalCarbs">0 克</td>
-                        <td id="totalfiber">0 克</td>
-                        <td id="totalnetcarb">0 克</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <!-- Selected Items Section -->
+            <div class="table-container">
+                <table class="result-table">
+                    <thead>
+                        <tr>
+                            <th>總熱量</th>
+                            <th>總蛋白質</th>
+                            <th>總脂肪</th>
+                            <th>總碳水化合物</th>
+                            <th>膳食纖維</th>
+                            <th>淨碳水</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="totalCalories">0 大卡</td>
+                            <td id="totalProtein">0 克</td>
+                            <td id="totalFat">0 克</td>
+                            <td id="totalCarbs">0 克</td>
+                            <td id="totalfiber">0 克</td>
+                            <td id="totalnetcarb">0 克</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <div class="selected-items-title">所選品項</div>
-            <table class="result-table">
-                <thead>
-                    <tr>
-                        <th>商品名稱</th>
-                        <th>數量</th>
-                        <th>總重量 (克)</th>
-                    </tr>
-                </thead>
-                <tbody id="selectedItems"></tbody>
-            </table>
+            <div class="table-container">
+                <table class="result-table">
+                    <thead>
+                        <tr>
+                            <th>商品名稱</th>
+                            <th>數量</th>
+                            <th>總重量 (克)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="selectedItems"></tbody>
+                </table>
+            </div>
         </div>
-
-        <!-- CSV Content Section -->
         <div id="csvContent"></div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             loadCSV();
@@ -173,28 +184,19 @@
 
         function displayCSVData(data) {
             const csvContent = document.getElementById('csvContent');
-
-            // Clear existing content
             csvContent.innerHTML = '';
 
-            // Group data by the first and second columns
             const groupedData = data.reduce((acc, row) => {
                 const category = row[Object.keys(row)[0]];
                 const subcategory = row[Object.keys(row)[1]];
+                if (!category || !subcategory) return acc;
 
-                if (!category || !subcategory) return acc; // Skip if category or subcategory is undefined
-
-                if (!acc[category]) {
-                    acc[category] = {};
-                }
-                if (!acc[category][subcategory]) {
-                    acc[category][subcategory] = [];
-                }
+                if (!acc[category]) acc[category] = {};
+                if (!acc[category][subcategory]) acc[category][subcategory] = [];
                 acc[category][subcategory].push(row);
                 return acc;
             }, {});
 
-            // Create collapsible sections for each main category
             Object.keys(groupedData).forEach(category => {
                 const button = document.createElement('button');
                 button.className = 'collapsible main-category';
@@ -208,8 +210,7 @@
 
                 const div = document.createElement('div');
                 div.className = 'content';
-                
-                // Create nested collapsible sections for each subcategory
+
                 Object.keys(groupedData[category]).forEach(subcategory => {
                     const subButton = document.createElement('button');
                     subButton.className = 'collapsible nested-content sub-category';
@@ -228,20 +229,19 @@
                     const thead = document.createElement('thead');
                     const headerRow = document.createElement('tr');
 
-                    // Create table headers
                     headers.forEach(header => {
                         const th = document.createElement('th');
                         th.textContent = header;
                         headerRow.appendChild(th);
                     });
-                    headerRow.appendChild(document.createElement('th')).textContent = '數量'; // Add Quantity header
+                    headerRow.appendChild(document.createElement('th')).textContent = '數量';
                     thead.appendChild(headerRow);
                     table.appendChild(thead);
 
                     const tbody = document.createElement('tbody');
                     groupedData[category][subcategory].forEach((row, rowIndex) => {
                         const tr = document.createElement('tr');
-                        let rowHasData = false; // Flag to check if row has data
+                        let rowHasData = false;
 
                         headers.forEach(header => {
                             const td = document.createElement('td');
@@ -250,12 +250,11 @@
                                 rowHasData = true;
                                 td.textContent = cellValue;
                             } else {
-                                td.textContent = ''; // Ensure empty cells do not show undefined
+                                td.textContent = '';
                             }
                             tr.appendChild(td);
                         });
 
-                        // Add Quantity input field
                         const td = document.createElement('td');
                         const input = document.createElement('input');
                         input.type = 'number';
@@ -283,62 +282,62 @@
             const totalProtein = document.getElementById('totalProtein');
             const totalFat = document.getElementById('totalFat');
             const totalCarbs = document.getElementById('totalCarbs');
-            const totalFiber = document.getElementById('totalfiber');
-            const totalNetCarb = document.getElementById('totalnetcarb');
-            const selectedItems = document.getElementById('selectedItems');
+            const totalfiber = document.getElementById('totalfiber');
+            const totalnetcarb = document.getElementById('totalnetcarb');
+            let calories = 0, protein = 0, fat = 0, carbs = 0, fiber = 0, netcarb = 0;
 
-            let calories = 0;
-            let protein = 0;
-            let fat = 0;
-            let carbs = 0;
-            let fiber = 0;
-            let netCarbs = 0;
+            document.querySelectorAll('.quantity-input').forEach(input => {
+                const row = input.closest('tr');
+                const quantity = parseInt(input.value) || 0;
 
-            const rows = document.querySelectorAll('table tbody tr');
-            rows.forEach(row => {
-                const quantity = row.querySelector('input.quantity-input');
-                const selectedQuantity = quantity ? parseFloat(quantity.value) : 0;
-                const cells = row.querySelectorAll('td');
+                if (quantity > 0) {
+                    const rowCells = row.querySelectorAll('td');
+                    const rowCalories = parseFloat(rowCells[2].textContent) || 0;
+                    const rowProtein = parseFloat(rowCells[3].textContent) || 0;
+                    const rowFat = parseFloat(rowCells[4].textContent) || 0;
+                    const rowCarbs = parseFloat(rowCells[5].textContent) || 0;
+                    const rowfiber = parseFloat(rowCells[6].textContent) || 0;
+                    const rownetcarb = parseFloat(rowCells[7].textContent) || 0;
 
-                if (selectedQuantity > 0) {
-                    calories += parseFloat(cells[2].textContent || 0) * selectedQuantity;
-                    protein += parseFloat(cells[3].textContent || 0) * selectedQuantity;
-                    fat += parseFloat(cells[4].textContent || 0) * selectedQuantity;
-                    carbs += parseFloat(cells[5].textContent || 0) * selectedQuantity;
-                    fiber += parseFloat(cells[6].textContent || 0) * selectedQuantity;
-                    netCarbs += (parseFloat(cells[5].textContent || 0) - parseFloat(cells[6].textContent || 0)) * selectedQuantity;
-                    
-                    // Update selected items table
-                    let itemName = cells[0].textContent;
-                    let itemRow = document.getElementById(itemName);
-                    if (!itemRow) {
-                        itemRow = document.createElement('tr');
-                        itemRow.id = itemName;
-                        itemRow.innerHTML = `
-                            <td>${itemName}</td>
-                            <td>${selectedQuantity}</td>
-                            <td>${parseFloat(cells[7].textContent || 0) * selectedQuantity} 克</td>
-                        `;
-                        selectedItems.appendChild(itemRow);
-                    } else {
-                        itemRow.children[1].textContent = selectedQuantity;
-                        itemRow.children[2].textContent = parseFloat(cells[7].textContent || 0) * selectedQuantity + ' 克';
-                    }
+                    calories += rowCalories * quantity;
+                    protein += rowProtein * quantity;
+                    fat += rowFat * quantity;
+                    carbs += rowCarbs * quantity;
+                    fiber += rowfiber * quantity;
+                    netcarb += rownetcarb * quantity;
                 }
             });
 
-            // Display totals
-            totalCalories.textContent = `${Math.round(calories)} 大卡`;
-            totalProtein.textContent = `${Math.round(protein)} 克`;
-            totalFat.textContent = `${Math.round(fat)} 克`;
-            totalCarbs.textContent = `${Math.round(carbs)} 克`;
-            totalFiber.textContent = `${Math.round(fiber)} 克`;
-            totalNetCarb.textContent = `${Math.round(netCarbs)} 克`;
+            totalCalories.textContent = `${calories.toFixed(2)} 大卡`;
+            totalProtein.textContent = `${protein.toFixed(2)} 克`;
+            totalFat.textContent = `${fat.toFixed(2)} 克`;
+            totalCarbs.textContent = `${carbs.toFixed(2)} 克`;
+            totalfiber.textContent = `${fiber.toFixed(2)} 克`;
+            totalnetcarb.textContent = `${netcarb.toFixed(2)} 克`;
+
+            displaySelectedItems();
         }
 
         function updateTotals() {
-            // Call calculateTotal() whenever input changes
             calculateTotal();
+        }
+
+        function displaySelectedItems() {
+            const selectedItems = document.getElementById('selectedItems');
+            selectedItems.innerHTML = '';
+
+            document.querySelectorAll('.quantity-input').forEach(input => {
+                const quantity = parseInt(input.value) || 0;
+                if (quantity > 0) {
+                    const row = input.closest('tr');
+                    const productName = row.querySelector('td:first-child').textContent;
+                    const weight = parseFloat(row.querySelector('td:nth-child(2)').textContent) || 0;
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${productName}</td><td>${quantity}</td><td>${(weight * quantity).toFixed(2)}</td>`;
+                    selectedItems.appendChild(tr);
+                }
+            });
         }
     </script>
 </body>
