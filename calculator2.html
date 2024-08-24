@@ -340,12 +340,12 @@
                 }
             });
 
-            document.getElementById('totalCalories').textContent = `${totalCalories.toFixed(2)} 大卡`;
-            document.getElementById('totalProtein').textContent = `${totalProtein.toFixed(2)} 克`;
-            document.getElementById('totalFat').textContent = `${totalFat.toFixed(2)} 克`;
-            document.getElementById('totalCarbs').textContent = `${totalCarbs.toFixed(2)} 克`;
-            document.getElementById('totalfiber').textContent = `${totalfiber.toFixed(2)} 克`;
-            document.getElementById('totalnetcarb').textContent = `${totalnetcarb.toFixed(2)} 克`;
+            document.getElementById('totalCalories').textContent = `${totalCalories.toFixed(1)} 大卡`;
+            document.getElementById('totalProtein').textContent = `${totalProtein.toFixed(1)} 克`;
+            document.getElementById('totalFat').textContent = `${totalFat.toFixed(1)} 克`;
+            document.getElementById('totalCarbs').textContent = `${totalCarbs.toFixed(1)} 克`;
+            document.getElementById('totalfiber').textContent = `${totalfiber.toFixed(1)} 克`;
+            document.getElementById('totalnetcarb').textContent = `${totalnetcarb.toFixed(1)} 克`;
 
             const selectedItemsTable = document.getElementById('selectedItems');
             selectedItemsTable.innerHTML = '';
@@ -356,7 +356,7 @@
                 const quantityCell = document.createElement('td');
                 quantityCell.textContent = item.quantity;
                 const weightCell = document.createElement('td');
-                weightCell.textContent = item.weight.toFixed(2); // Display weight rounded to 2 decimals
+                weightCell.textContent = item.weight.toFixed(1); // Display weight rounded to 1 decimals
 
                 row.appendChild(itemNameCell);
                 row.appendChild(quantityCell);
