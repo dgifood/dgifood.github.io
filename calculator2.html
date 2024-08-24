@@ -38,6 +38,9 @@
             overflow-x: auto; /* Enable horizontal scroll */
             white-space: normal; /* Prevent wrapping */
         }
+        .quantity-input {
+               width: 50%; /* 设置宽度为父元素宽度的50% */
+        }
         .fixed-column {
             position: static;
             left: 0;
@@ -259,7 +262,6 @@
                         const input = document.createElement('input');
                         input.type = 'number';
                         input.className = 'quantity-input';
-                        input[type="number"] {    width: 50%; }
                         input.id = `quantity-${rowIndex}`;
                         input.addEventListener('input', updateTotals);
                         td.appendChild(input);
