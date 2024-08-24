@@ -259,6 +259,7 @@
                         const input = document.createElement('input');
                         input.type = 'number';
                         input.className = 'quantity-input';
+                        input[type="number"] {    width: 50%; }
                         input.id = `quantity-${rowIndex}`;
                         input.addEventListener('input', updateTotals);
                         td.appendChild(input);
