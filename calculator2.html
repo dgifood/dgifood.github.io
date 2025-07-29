@@ -1,339 +1,449 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <title>熱量計算表</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            text-align: center; /* Center-align all content */
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            margin-left: auto;
-            margin-right: auto; /* Center-align table */
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        .collapsible {
-            cursor: pointer;
-            background-color: #f9f9f9;
-            padding: 10px;
-            border: none;
-            text-align: left;
-            outline: none;
-            font-size: 18px;
-            width: 100%;
-        }
-        .collapsible.main-category {
-            font-weight: bold;
-            color: #6f4f28; /* Coffee color */
-        }
-        .content {
-            display: none;
-            padding: 10px 0;
-            overflow: hidden;
-            background-color: #f1f1f1;
-        }
-        .nested-content {
-            padding-left: 20px;
-        }
-        .collapsible.sub-category {
-            font-weight: normal;
-            color: #333; /* Default text color */
-        }
-        .result-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-        .result-table, .result-table th, .result-table td {
-            border: 1px solid #ddd;
-        }
-        .result-table th, .result-table td {
-            padding: 10px;
-            text-align: center;
-        }
-        .selected-items-title {
-            font-weight: bold;
-            color: #6f4f28; /* Coffee color */
-            margin-top: 20px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            background-color: #e0e0e0; /* Light gray background */
-            color: #333; /* Dark text color */
-            cursor: pointer;
-            transition: background-color 0.3s ease, color 0.3s ease;
-            display: inline-block; /* Ensure button does not take full width */
-            margin-top: 10px;
-        }
-        button:hover {
-            background-color: #b0b0b0; /* Darker gray on hover */
-            color: #000; /* Darker text color on hover */
-        }
-        button:focus {
-            outline: none; /* Remove outline on focus */
-        }
-    </style>
+<meta charset="UTF-8" />
+<title>熱量計算表</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        text-align: center;
+        background: #fffaf0;
+    }
+    .container {
+        max-width: 800px;
+        margin: auto;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        margin-left: auto;
+        margin-right: auto;
+        background: white;
+    }
+    table, th, td {
+        border: 1px solid #555;
+    }
+    th, td {
+        padding: 8px;
+        text-align: left;
+    }
+    .collapsible {
+        cursor: pointer;
+        background-color: #f9f9f9;
+        padding: 10px;
+        border: none;
+        text-align: left;
+        outline: none;
+        font-size: 18px;
+        width: 100%;
+        user-select: none;
+    }
+    .collapsible.main-category {
+        font-weight: bold;
+        color: #6f4f28; /* Coffee color */
+        border-bottom: 2px solid #6f4f28;
+    }
+    .content {
+        display: none;
+        padding: 5px 0 15px 0;
+        overflow: hidden;
+        background-color: #f1f1f1;
+    }
+    .nested-content {
+        padding-left: 20px;
+    }
+    .collapsible.sub-category {
+        font-weight: normal;
+        color: #333;
+        background: #e7e7e7;
+        margin-top: 5px;
+        border-radius: 3px;
+    }
+    .result-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        background: white;
+    }
+    .result-table, .result-table th, .result-table td {
+        border: 1px solid #ddd;
+    }
+    .result-table th, .result-table td {
+        padding: 10px;
+        text-align: center;
+    }
+    .selected-items-title {
+        font-weight: bold;
+        color: #6f4f28;
+        margin-top: 20px;
+    }
+    button {
+        padding: 5px 10px;
+        font-size: 14px;
+        margin: 0 2px;
+        cursor: pointer;
+        border-radius: 3px;
+        border: 1px solid #888;
+        background: #f0f0f0;
+        transition: background-color 0.3s ease;
+        user-select: none;
+    }
+    button:hover {
+        background-color: #ddd;
+    }
+    .search-bar {
+        margin: 20px auto 10px;
+        width: 60%;
+        position: relative;
+    }
+    .search-bar input {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #aaa;
+        border-radius: 4px;
+    }
+    #searchResults {
+        border: 1px solid #ccc;
+        max-height: 200px;
+        overflow-y: auto;
+        background: white;
+        position: absolute;
+        width: 100%;
+        z-index: 100;
+        display: none;
+        border-radius: 0 0 4px 4px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    #searchResults div {
+        padding: 5px 10px;
+        cursor: pointer;
+        border-bottom: 1px solid #eee;
+        font-size: 14px;
+        user-select: none;
+    }
+    #searchResults div:hover {
+        background-color: #f0e68c;
+    }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>熱量計算表</h1>
-
-        <!-- Calculation and Results Section -->
-        <div>
-            <button onclick="calculateTotal()">計算總營養成分</button>
-            <table class="result-table">
-                <thead>
-                    <tr>
-                        <th>總熱量</th>
-                        <th>總蛋白質</th>
-                        <th>總脂肪</th>
-                        <th>總碳水化合物</th>
-                        <th>膳食纖維</th>
-                        <th>淨碳水</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td id="totalCalories">0 大卡</td>
-                        <td id="totalProtein">0 克</td>
-                        <td id="totalFat">0 克</td>
-                        <td id="totalCarbs">0 克</td>
-                        <td id="totalfiber">0 克</td>
-                        <td id="totalnetcarb">0 克</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <!-- Selected Items Section -->
-            <div class="selected-items-title">所選品項</div>
-            <table class="result-table">
-                <thead>
-                    <tr>
-                        <th>商品名稱</th>
-                        <th>數量</th>
-                        <th>總重量 (克)</th>
-                    </tr>
-                </thead>
-                <tbody id="selectedItems"></tbody>
-            </table>
-        </div>
-
-        <!-- CSV Content Section -->
-        <div id="csvContent"></div>
+<div class="container">
+    <h1>熱量計算表</h1>
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="搜尋商品名稱..." oninput="showSearchResults()" autocomplete="off" />
+        <div id="searchResults"></div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            loadCSV();
+    <!-- 移除這裡原本的計算按鈕 -->
+
+    <table class="result-table">
+        <thead>
+            <tr>
+                <th>總熱量</th>
+                <th>總蛋白質</th>
+                <th>總脂肪</th>
+                <th>總碳水化合物</th>
+                <th>膳食纖維</th>
+                <th>淨碳水</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td id="totalCalories">0 卡路里</td>
+                <td id="totalProtein">0 克</td>
+                <td id="totalFat">0 克</td>
+                <td id="totalCarbs">0 克</td>
+                <td id="totalfiber">0 克</td>
+                <td id="totalnetcarb">0 克</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="selected-items-title">所選品項</div>
+    <table class="result-table">
+        <thead>
+            <tr>
+                <th>商品名稱</th>
+                <th>數量</th>
+                <th>總重量 (克)</th>
+            </tr>
+        </thead>
+        <tbody id="selectedItems"></tbody>
+    </table>
+
+    <!-- 新增：將按鈕放在這裡 -->
+    <button id="calculateBtn" onclick="calculateTotal()">計算總營養成分</button>
+
+    <div id="csvContent"></div>
+</div>
+
+<script>
+    let allItems = [];  // 用於搜尋的所有品項
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadCSV();
+        // 點擊外部區域隱藏搜尋結果
+        document.addEventListener('click', e => {
+            const sr = document.getElementById('searchResults');
+            const input = document.getElementById('searchInput');
+            if (!sr.contains(e.target) && e.target !== input) {
+                sr.style.display = 'none';
+            }
         });
+    });
 
-        function loadCSV() {
-            Papa.parse('https://kitty32219.github.io/dgifood/data.csv', {
-                download: true,
-                header: true,
-                complete: function(results) {
-                    displayCSVData(results.data);
-                }
+    function loadCSV() {
+        Papa.parse('https://kitty32219.github.io/dgifood/data.csv', {
+            download: true,
+            header: true,
+            complete: function(results) {
+                displayCSVData(results.data);
+            }
+        });
+    }
+
+    function displayCSVData(data) {
+        const csvContent = document.getElementById('csvContent');
+        csvContent.innerHTML = '';
+        allItems = [];
+
+        const groupedData = data.reduce((acc, row) => {
+            const keys = Object.keys(row);
+            const category = row[keys[0]];
+            const subcategory = row[keys[1]];
+            if (!category || !subcategory) return acc;
+            if (!acc[category]) acc[category] = {};
+            if (!acc[category][subcategory]) acc[category][subcategory] = [];
+            acc[category][subcategory].push(row);
+            return acc;
+        }, {});
+
+        Object.keys(groupedData).forEach(category => {
+            const mainBtn = document.createElement('button');
+            mainBtn.className = 'collapsible main-category';
+            mainBtn.textContent = category;
+            mainBtn.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const content = this.nextElementSibling;
+                content.style.display = content.style.display === 'block' ? 'none' : 'block';
             });
-        }
+            csvContent.appendChild(mainBtn);
 
-        function displayCSVData(data) {
-            const csvContent = document.getElementById('csvContent');
+            const mainContent = document.createElement('div');
+            mainContent.className = 'content';
 
-            // Clear existing content
-            csvContent.innerHTML = '';
-
-            // Group data by the first and second columns
-            const groupedData = data.reduce((acc, row) => {
-                const category = row[Object.keys(row)[0]];
-                const subcategory = row[Object.keys(row)[1]];
-
-                if (!category || !subcategory) return acc; // Skip if category or subcategory is undefined
-
-                if (!acc[category]) {
-                    acc[category] = {};
-                }
-                if (!acc[category][subcategory]) {
-                    acc[category][subcategory] = [];
-                }
-                acc[category][subcategory].push(row);
-                return acc;
-            }, {});
-
-            // Create collapsible sections for each main category
-            Object.keys(groupedData).forEach(category => {
-                const button = document.createElement('button');
-                button.className = 'collapsible main-category';
-                button.textContent = category;
-                button.addEventListener('click', function() {
+            Object.keys(groupedData[category]).forEach(subcategory => {
+                const subBtn = document.createElement('button');
+                subBtn.className = 'collapsible nested-content sub-category';
+                subBtn.textContent = subcategory;
+                subBtn.addEventListener('click', function() {
                     this.classList.toggle('active');
                     const content = this.nextElementSibling;
                     content.style.display = content.style.display === 'block' ? 'none' : 'block';
                 });
-                csvContent.appendChild(button);
+                mainContent.appendChild(subBtn);
 
-                const div = document.createElement('div');
-                div.className = 'content';
-                
-                // Create nested collapsible sections for each subcategory
-                Object.keys(groupedData[category]).forEach(subcategory => {
-                    const subButton = document.createElement('button');
-                    subButton.className = 'collapsible nested-content sub-category';
-                    subButton.textContent = subcategory;
-                    subButton.addEventListener('click', function() {
-                        this.classList.toggle('active');
-                        const content = this.nextElementSibling;
-                        content.style.display = content.style.display === 'block' ? 'none' : 'block';
-                    });
-                    div.appendChild(subButton);
+                const subContent = document.createElement('div');
+                subContent.className = 'content nested-content';
+                const table = document.createElement('table');
 
-                    const subDiv = document.createElement('div');
-                    subDiv.className = 'content nested-content';
-                    const table = document.createElement('table');
-                    const headers = Object.keys(groupedData[category][subcategory][0] || {}).filter((_, index) => index > 1);
-                    const thead = document.createElement('thead');
-                    const headerRow = document.createElement('tr');
-
-                    // Create table headers
-                    headers.forEach(header => {
-                        const th = document.createElement('th');
-                        th.textContent = header;
-                        headerRow.appendChild(th);
-                    });
-                    headerRow.appendChild(document.createElement('th')).textContent = '數量'; // Add Quantity header
-                    thead.appendChild(headerRow);
-                    table.appendChild(thead);
-
-                    const tbody = document.createElement('tbody');
-                    groupedData[category][subcategory].forEach((row, rowIndex) => {
-                        const tr = document.createElement('tr');
-                        let rowHasData = false; // Flag to check if row has data
-
-                        headers.forEach(header => {
-                            const td = document.createElement('td');
-                            const cellValue = row[header];
-                            if (cellValue) {
-                                rowHasData = true;
-                                td.textContent = cellValue;
-                            } else {
-                                td.textContent = ''; // Ensure empty cells do not show undefined
-                            }
-                            tr.appendChild(td);
-                        });
-
-                        // Add Quantity input field
-                        const td = document.createElement('td');
-                        const input = document.createElement('input');
-                        input.type = 'number';
-                        input.className = 'quantity-input';
-                        input.id = `quantity-${rowIndex}`;
-                        input.value = 0;
-                        input.min = 0;
-                        input.dataset.calories = row['熱量'] || 0; // Ensure header matches CSV file
-                        input.dataset.protein = row['蛋白質'] || 0;   // Ensure header matches CSV file
-                        input.dataset.fat = row['脂肪'] || 0;           // Ensure header matches CSV file
-                        input.dataset.carbs = row['碳水化合物'] || 0;       // Ensure header matches CSV file
-                        input.dataset.fiber = row['膳食纖維'] || 0;       // Ensure header matches CSV file
-                        input.dataset.netcarb = row['淨碳'] || 0;          // Ensure header matches CSV file
-                        input.dataset.weight = row['重量'] || 0;    // Add weight attribute if matches CSV file
-                        td.appendChild(input);
-                        tr.appendChild(td);
-
-                        tbody.appendChild(tr);
-
-                        if (rowHasData) { // Only append the row if it has data
-                            tbody.appendChild(tr);
-                        }
-                    });
-
-                    table.appendChild(tbody);
-                    subDiv.appendChild(table);
-                    div.appendChild(subDiv);
+                // 表頭：商品名稱 + 數量欄
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                ['商品名稱', '數量'].forEach(h => {
+                    const th = document.createElement('th');
+                    th.textContent = h;
+                    headerRow.appendChild(th);
                 });
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
 
-                csvContent.appendChild(div);
+                const tbody = document.createElement('tbody');
+                groupedData[category][subcategory].forEach((row, idx) => {
+                    const tr = document.createElement('tr');
+
+                    const nameCell = document.createElement('td');
+                    nameCell.textContent = row['商品名稱'] || '';
+                    tr.appendChild(nameCell);
+
+                    const qtyCell = document.createElement('td');
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.min = 0;
+                    input.value = 0;
+                    input.className = 'quantity-input';
+                    // 營養資料都存dataset，方便計算
+                    input.dataset.calories = row['熱量'] || 0;
+                    input.dataset.protein = row['蛋白質'] || 0;
+                    input.dataset.fat = row['脂肪'] || 0;
+                    input.dataset.carbs = row['碳水化合物'] || 0;
+                    input.dataset.fiber = row['膳食纖維'] || 0;
+                    input.dataset.netcarb = row['淨碳'] || 0;
+                    input.dataset.weight = row['重量'] || 0;
+
+                    // 增減按鈕
+                    const minusBtn = document.createElement('button');
+                    minusBtn.textContent = '-';
+                    minusBtn.type = 'button';
+                    minusBtn.onclick = () => {
+                        input.value = Math.max(0, parseInt(input.value) - 1);
+                    };
+                    const plusBtn = document.createElement('button');
+                    plusBtn.textContent = '+';
+                    plusBtn.type = 'button';
+                    plusBtn.onclick = () => {
+                        input.value = parseInt(input.value) + 1;
+                    };
+
+                    qtyCell.appendChild(minusBtn);
+                    qtyCell.appendChild(input);
+                    qtyCell.appendChild(plusBtn);
+
+                    tr.appendChild(qtyCell);
+
+                    tbody.appendChild(tr);
+
+                    // 登記用於搜尋
+                    allItems.push({
+                        name: (row['商品名稱'] || '').toLowerCase(),
+                        category,
+                        subcategory,
+                        rowElement: tr
+                    });
+                });
+                table.appendChild(tbody);
+                subContent.appendChild(table);
+                mainContent.appendChild(subContent);
             });
+
+            csvContent.appendChild(mainContent);
+        });
+    }
+
+    function calculateTotal() {
+        const quantities = document.querySelectorAll('.quantity-input');
+        let totalCalories = 0, totalProtein = 0, totalFat = 0, totalCarbs = 0, totalfiber = 0, totalnetcarb = 0;
+        const selectedItems = [];
+
+        quantities.forEach(input => {
+            const qty = parseFloat(input.value);
+            if (qty > 0) {
+                const tr = input.closest('tr');
+                const name = tr.cells[0].textContent;
+                const weight = parseFloat(input.dataset.weight) || 0;
+
+                totalCalories += parseFloat(input.dataset.calories || 0) * qty;
+                totalProtein += parseFloat(input.dataset.protein || 0) * qty;
+                totalFat += parseFloat(input.dataset.fat || 0) * qty;
+                totalCarbs += parseFloat(input.dataset.carbs || 0) * qty;
+                totalfiber += parseFloat(input.dataset.fiber || 0) * qty;
+                totalnetcarb += parseFloat(input.dataset.netcarb || 0) * qty;
+
+                selectedItems.push({ name, quantity: qty, weight: weight * qty });
+            }
+        });
+
+        document.getElementById('totalCalories').textContent = `${totalCalories.toFixed(2)} 卡路里`;
+        document.getElementById('totalProtein').textContent = `${totalProtein.toFixed(2)} 克`;
+        document.getElementById('totalFat').textContent = `${totalFat.toFixed(2)} 克`;
+        document.getElementById('totalCarbs').textContent = `${totalCarbs.toFixed(2)} 克`;
+        document.getElementById('totalfiber').textContent = `${totalfiber.toFixed(2)} 克`;
+        document.getElementById('totalnetcarb').textContent = `${totalnetcarb.toFixed(2)} 克`;
+
+        const selectedItemsTable = document.getElementById('selectedItems');
+        selectedItemsTable.innerHTML = '';
+
+        selectedItems.forEach(item => {
+            const tr = document.createElement('tr');
+            const qtyInput = document.createElement('input');
+            qtyInput.type = 'number';
+            qtyInput.min = 0;
+            qtyInput.value = item.quantity;
+            qtyInput.style.width = '60px';
+
+            // 數量改變時同步更新主表的對應數量輸入框
+            qtyInput.addEventListener('input', () => {
+                // 找到所有主表中的品項輸入框，找名字相同的並更新數量
+                document.querySelectorAll('.quantity-input').forEach(mainInput => {
+                    const tr = mainInput.closest('tr');
+                    const name = tr.cells[0].textContent;
+                    if (name === item.name) {
+                        mainInput.value = qtyInput.value;
+                    }
+                });
+            });
+
+            tr.innerHTML = `<td>${item.name}</td>`;
+            const qtyTd = document.createElement('td');
+            qtyTd.appendChild(qtyInput);
+            tr.appendChild(qtyTd);
+
+            const weightTd = document.createElement('td');
+            weightTd.textContent = item.weight.toFixed(2);
+            tr.appendChild(weightTd);
+
+            selectedItemsTable.appendChild(tr);
+        });
+    }
+
+    function showSearchResults() {
+        const input = document.getElementById('searchInput');
+        const resultsDiv = document.getElementById('searchResults');
+        const keyword = input.value.trim().toLowerCase();
+
+        resultsDiv.innerHTML = '';
+        if (!keyword) {
+            resultsDiv.style.display = 'none';
+            return;
         }
 
-        function calculateTotal() {
-            const quantities = document.querySelectorAll('.quantity-input');
-            let totalCalories = 0;
-            let totalProtein = 0;
-            let totalFat = 0;
-            let totalCarbs = 0;
-            let totalfiber = 0;
-            let totalnetcarb = 0;
-            const selectedItems = [];
-
-            quantities.forEach(input => {
-                const quantity = parseFloat(input.value);
-                if (quantity > 0) {
-                    const calories = parseFloat(input.dataset.calories) || 0;
-                    const protein = parseFloat(input.dataset.protein) || 0;
-                    const fat = parseFloat(input.dataset.fat) || 0;
-                    const carbs = parseFloat(input.dataset.carbs) || 0;
-                    const fiber = parseFloat(input.dataset.fiber) || 0;
-                    const netcarb = parseFloat(input.dataset.netcarb) || 0;
-                    const weight = parseFloat(input.dataset.weight) || 0;
-
-                    totalCalories += calories * quantity;
-                    totalProtein += protein * quantity;
-                    totalFat += fat * quantity;
-                    totalCarbs += carbs * quantity;
-                    totalfiber += fiber * quantity;
-                    totalnetcarb += netcarb * quantity;
-
-                    const row = input.closest('tr');
-                    const itemName = row.cells[0].textContent;
-
-                    selectedItems.push({ name: itemName, quantity, weight: weight * quantity });
-                }
-            });
-
-            document.getElementById('totalCalories').textContent = `${totalCalories.toFixed(2)} 大卡`;
-            document.getElementById('totalProtein').textContent = `${totalProtein.toFixed(2)} 克`;
-            document.getElementById('totalFat').textContent = `${totalFat.toFixed(2)} 克`;
-            document.getElementById('totalCarbs').textContent = `${totalCarbs.toFixed(2)} 克`;
-            document.getElementById('totalfiber').textContent = `${totalfiber.toFixed(2)} 克`;
-            document.getElementById('totalnetcarb').textContent = `${totalnetcarb.toFixed(2)} 克`;
-
-            const selectedItemsTable = document.getElementById('selectedItems');
-            selectedItemsTable.innerHTML = '';
-            selectedItems.forEach(item => {
-                const row = document.createElement('tr');
-                const itemNameCell = document.createElement('td');
-                itemNameCell.textContent = item.name;
-                const quantityCell = document.createElement('td');
-                quantityCell.textContent = item.quantity;
-                const weightCell = document.createElement('td');
-                weightCell.textContent = item.weight.toFixed(2); // Display weight rounded to 2 decimals
-
-                row.appendChild(itemNameCell);
-                row.appendChild(quantityCell);
-                row.appendChild(weightCell);
-                selectedItemsTable.appendChild(row);
-            });
+        const matchedItems = allItems.filter(item => item.name.includes(keyword));
+        if (matchedItems.length === 0) {
+            resultsDiv.style.display = 'none';
+            return;
         }
-    </script>
+
+        matchedItems.forEach(item => {
+            const div = document.createElement('div');
+            div.textContent = `${item.name} （${item.category} > ${item.subcategory}）`;
+            div.onclick = () => {
+                // 收起所有展開項目
+                document.querySelectorAll('.collapsible.main-category.active').forEach(btn => btn.click());
+                document.querySelectorAll('.collapsible.sub-category.active').forEach(btn => btn.click());
+
+                // 找主分類按鈕並展開
+                const csvContent = document.getElementById('csvContent');
+                const mainBtns = [...csvContent.querySelectorAll('.collapsible.main-category')];
+                const mainBtn = mainBtns.find(btn => btn.textContent === item.category);
+                if (mainBtn && !mainBtn.classList.contains('active')) mainBtn.click();
+
+                // 找子分類按鈕並展開
+                const mainContent = mainBtn.nextElementSibling;
+                const subBtns = [...mainContent.querySelectorAll('.collapsible.sub-category')];
+                const subBtn = subBtns.find(btn => btn.textContent === item.subcategory);
+                if (subBtn && !subBtn.classList.contains('active')) subBtn.click();
+
+                // 滾動到目標品項並高亮3秒
+                item.rowElement.scrollIntoView({behavior:'smooth', block:'center'});
+                item.rowElement.style.backgroundColor = '#ffff99';
+                setTimeout(() => {
+                    item.rowElement.style.backgroundColor = '';
+                }, 3000);
+
+                // 隱藏搜尋結果並清空輸入
+                resultsDiv.style.display = 'none';
+                input.value = '';
+            };
+            resultsDiv.appendChild(div);
+        });
+
+        resultsDiv.style.display = 'block';
+    }
+</script>
 </body>
 </html>
