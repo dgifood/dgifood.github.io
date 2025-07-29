@@ -139,7 +139,8 @@
         <div id="searchResults"></div>
     </div>
 
-    <button onclick="calculateTotal()">計算總營養成分</button>
+    <!-- 移除這裡原本的計算按鈕 -->
+
     <table class="result-table">
         <thead>
             <tr>
@@ -174,6 +175,9 @@
         </thead>
         <tbody id="selectedItems"></tbody>
     </table>
+
+    <!-- 新增：將按鈕放在這裡 -->
+    <button id="calculateBtn" onclick="calculateTotal()">計算總營養成分</button>
 
     <div id="csvContent"></div>
 </div>
@@ -353,9 +357,36 @@
 
         const selectedItemsTable = document.getElementById('selectedItems');
         selectedItemsTable.innerHTML = '';
+
         selectedItems.forEach(item => {
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td>${item.name}</td><td>${item.quantity}</td><td>${item.weight.toFixed(2)}</td>`;
+            const qtyInput = document.createElement('input');
+            qtyInput.type = 'number';
+            qtyInput.min = 0;
+            qtyInput.value = item.quantity;
+            qtyInput.style.width = '60px';
+
+            // 數量改變時同步更新主表的對應數量輸入框
+            qtyInput.addEventListener('input', () => {
+                // 找到所有主表中的品項輸入框，找名字相同的並更新數量
+                document.querySelectorAll('.quantity-input').forEach(mainInput => {
+                    const tr = mainInput.closest('tr');
+                    const name = tr.cells[0].textContent;
+                    if (name === item.name) {
+                        mainInput.value = qtyInput.value;
+                    }
+                });
+            });
+
+            tr.innerHTML = `<td>${item.name}</td>`;
+            const qtyTd = document.createElement('td');
+            qtyTd.appendChild(qtyInput);
+            tr.appendChild(qtyTd);
+
+            const weightTd = document.createElement('td');
+            weightTd.textContent = item.weight.toFixed(2);
+            tr.appendChild(weightTd);
+
             selectedItemsTable.appendChild(tr);
         });
     }
@@ -416,4 +447,3 @@
 </script>
 </body>
 </html>
-
